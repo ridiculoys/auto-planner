@@ -68,14 +68,14 @@ export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
         setFinalTitle(result.title);
         setFinalSteps(result.steps);
         setView("confirmation");
-        if (result.followUpQuestions && result.followUpQuestions.length > 0) {
-           setConversation(prev => [...prev, { from: "ai", text: result.followUpQuestions.join(' ') + " Here's what I have so far."}]);
+        if (result.followUpQuestion) {
+           setConversation(prev => [...prev, { from: "ai", text: result.followUpQuestion + " Here's what I have so far."}]);
         }
-      } else if (result.followUpQuestions && result.followUpQuestions.length > 0) {
+      } else if (result.followUpQuestion) {
         setView("conversation");
         setConversation((prev) => [
           ...prev,
-          { from: "ai", text: result.followUpQuestions!.join(" ") },
+          { from: "ai", text: result.followUpQuestion! },
         ]);
       } else {
         toast({

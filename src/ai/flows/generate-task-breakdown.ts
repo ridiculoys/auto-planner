@@ -30,10 +30,10 @@ const GenerateTaskBreakdownOutputSchema = z.object({
   confirmed: z
     .boolean()
     .describe('Whether the user has confirmed the task breakdown.'),
-  followUpQuestions: z
-    .array(z.string())
+  followUpQuestion: z
+    .string()
     .optional()
-    .describe('Follow-up questions to clarify ambiguous details.'),
+    .describe('A single follow-up question to clarify ambiguous details.'),
 });
 export type GenerateTaskBreakdownOutput = z.infer<
   typeof GenerateTaskBreakdownOutputSchema
@@ -51,10 +51,10 @@ const generateTaskBreakdownPrompt = ai.definePrompt({
   output: {schema: GenerateTaskBreakdownOutputSchema},
   prompt: `You are a helpful AI assistant that breaks down tasks into actionable steps.
 
-  Based on the user's input, generate a step-by-step breakdown of the task. If the task is ambiguous or requires more information, ask follow-up questions to clarify the details.
+  Based on the user's input, generate a step-by-step breakdown of the task. If the task is ambiguous or requires more information, ask a single follow-up question to clarify the details.
 
   If you have enough information to generate a list, generate a concise and relevant title for the list, generate the steps, and set confirmed to true.
-  If you need more information, ask follow-up questions and set confirmed to false.
+  If you need more information, ask one follow-up question and set confirmed to false.
 
   Task: {{{task}}}`,
 });
