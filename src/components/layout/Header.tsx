@@ -17,7 +17,7 @@ export function Header({ setSearchQuery, createTodoTrigger }: HeaderProps) {
         <div className="flex items-center gap-6 md:gap-10">
           <a href="/" className="flex items-center space-x-2">
             <Logo className="h-6 w-6 text-primary" />
-            <span className="inline-block font-bold text-lg">IntelliDo</span>
+            <span className="inline-block font-bold text-lg">Auto Planner</span>
           </a>
         </div>
 

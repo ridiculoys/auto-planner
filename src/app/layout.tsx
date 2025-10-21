@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'IntelliDo',
+  title: 'Auto Planner',
   description: 'AI-powered to-do list app',
 };
 
