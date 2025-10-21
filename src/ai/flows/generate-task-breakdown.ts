@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Generates a step-by-step breakdown of tasks from natural language input, asking clarifying questions as needed.
+ * @fileOverview Generates a step-by-step breakdown of tasks and a title from natural language input, asking clarifying questions as needed.
  *
  * - generateTaskBreakdown - A function that handles the task breakdown process.
  * - GenerateTaskBreakdownInput - The input type for the generateTaskBreakdown function.
@@ -19,8 +19,16 @@ export type GenerateTaskBreakdownInput = z.infer<
 >;
 
 const GenerateTaskBreakdownOutputSchema = z.object({
-  steps: z.array(z.string()).describe('The step-by-step breakdown of the task.'),
-  confirmed: z.boolean().describe('Whether the user has confirmed the task breakdown.'),
+  title: z
+    .string()
+    .optional()
+    .describe('A concise and relevant title for the to-do list.'),
+  steps: z
+    .array(z.string())
+    .describe('The step-by-step breakdown of the task.'),
+  confirmed: z
+    .boolean()
+    .describe('Whether the user has confirmed the task breakdown.'),
   followUpQuestions: z
     .array(z.string())
     .optional()
@@ -42,7 +50,9 @@ const generateTaskBreakdownPrompt = ai.definePrompt({
   output: {schema: GenerateTaskBreakdownOutputSchema},
   prompt: `You are a helpful AI assistant that breaks down tasks into actionable steps.
 
-  Based on the user's input, generate a step-by-step breakdown of the task. If the task is ambiguous or requires more information, ask follow-up questions to clarify the details. Once you have a clear understanding of the task, generate the steps and confirm with the user.
+  Based on the user's input, generate a step-by-step breakdown of the task. If the task is ambiguous or requires more information, ask follow-up questions to clarify the details.
+
+  Once you have a clear understanding of the task, generate a concise and relevant title for the list, generate the steps, and confirm with the user.
 
   Task: {{{task}}}`,
 });

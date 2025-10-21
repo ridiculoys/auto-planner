@@ -11,32 +11,32 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { ConversationMessage, TodoListType } from "@/lib/types";
+import { Input } from "../ui/input";
 
 type CreateTodoDialogProps = {
   onAddTodoList: (listData: Omit<TodoListType, "id">) => void;
 };
 
 export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
-  const [title, setTitle] = useState("");
   const [initialPrompt, setInitialPrompt] = useState("");
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [finalTitle, setFinalTitle] = useState<string | null>(null);
   const [finalSteps, setFinalSteps] = useState<string[] | null>(null);
   const [view, setView] = useState<"initial" | "conversation" | "confirmation">("initial");
   const { toast } = useToast();
 
   const handleInitialGenerate = async () => {
-    if (!title.trim() || !initialPrompt.trim()) {
+    if (!initialPrompt.trim()) {
       toast({
         variant: "destructive",
-        title: "Missing fields",
-        description: "Please provide a title and a task description.",
+        title: "Missing description",
+        description: "Please describe the task.",
       });
       return;
     }
@@ -64,7 +64,8 @@ export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
         .join("\n\n");
       const result = await generateTaskBreakdown({ task: fullPrompt });
 
-      if (result.steps && result.steps.length > 0) {
+      if (result.steps && result.steps.length > 0 && result.title) {
+        setFinalTitle(result.title);
         setFinalSteps(result.steps);
         setView("confirmation");
         if(result.followUpQuestions && result.followUpQuestions.length > 0) {
@@ -97,9 +98,9 @@ export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
   };
 
   const handleConfirm = () => {
-    if (!finalSteps || !title) return;
+    if (!finalSteps || !finalTitle) return;
     onAddTodoList({
-      title,
+      title: finalTitle,
       summary: initialPrompt,
       createdAt: new Date().toISOString(),
       tasks: finalSteps.map((step) => ({
@@ -115,13 +116,14 @@ export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
     setConversation(prev => [...prev, { from: "ai", text: "What would you like to change in this list?" }]);
     setView("conversation");
     setFinalSteps(null);
+    setFinalTitle(null);
   }
 
   const resetState = () => {
-    setTitle("");
     setInitialPrompt("");
     setConversation([]);
     setFinalSteps(null);
+    setFinalTitle(null);
     setIsLoading(false);
     setView("initial");
   };
@@ -139,12 +141,6 @@ export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
 
       {view === "initial" && (
         <div className="grid gap-4 py-4">
-          <Input
-            id="title"
-            placeholder="List Title (e.g., 'Weekend Chores')"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
           <Textarea
             id="prompt"
             placeholder="Describe what you need to do... (e.g., 'buy groceries for pasta, pick up laundry, and water the plants')"
@@ -221,9 +217,9 @@ export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
         </div>
       )}
 
-      {view === "confirmation" && finalSteps && (
+      {view === "confirmation" && finalSteps && finalTitle && (
         <div>
-          <h3 className="font-semibold mb-2">Here's your plan for "{title}":</h3>
+          <h3 className="font-semibold mb-2">Here's your plan for "{finalTitle}":</h3>
           <ScrollArea className="max-h-60 w-full rounded-md border p-4">
              <ul className="space-y-2">
                 {finalSteps.map((step, index) => (
