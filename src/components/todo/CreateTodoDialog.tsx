@@ -64,17 +64,18 @@ export function CreateTodoDialog({ onAddTodoList }: CreateTodoDialogProps) {
         .join("\n\n");
       const result = await generateTaskBreakdown({ task: fullPrompt });
 
-      if (result.steps && result.steps.length > 0 && result.title) {
+      if (result.confirmed && result.steps && result.steps.length > 0 && result.title) {
         setFinalTitle(result.title);
         setFinalSteps(result.steps);
         setView("confirmation");
-        if(result.followUpQuestions && result.followUpQuestions.length > 0) {
-          setConversation(prev => [...prev, { from: "ai", text: result.followUpQuestions.join(' ') + " Here's the list I've generated so far based on your input."}]);
+        if (result.followUpQuestions && result.followUpQuestions.length > 0) {
+           setConversation(prev => [...prev, { from: "ai", text: result.followUpQuestions.join(' ') + " Here's what I have so far."}]);
         }
       } else if (result.followUpQuestions && result.followUpQuestions.length > 0) {
+        setView("conversation");
         setConversation((prev) => [
           ...prev,
-          { from: "ai", text: result.followUpQuestions.join(" ") },
+          { from: "ai", text: result.followUpQuestions!.join(" ") },
         ]);
       } else {
         toast({

@@ -25,6 +25,7 @@ const GenerateTaskBreakdownOutputSchema = z.object({
     .describe('A concise and relevant title for the to-do list.'),
   steps: z
     .array(z.string())
+    .optional()
     .describe('The step-by-step breakdown of the task.'),
   confirmed: z
     .boolean()
@@ -52,7 +53,8 @@ const generateTaskBreakdownPrompt = ai.definePrompt({
 
   Based on the user's input, generate a step-by-step breakdown of the task. If the task is ambiguous or requires more information, ask follow-up questions to clarify the details.
 
-  Once you have a clear understanding of the task, generate a concise and relevant title for the list, generate the steps, and confirm with the user.
+  If you have enough information to generate a list, generate a concise and relevant title for the list, generate the steps, and set confirmed to true.
+  If you need more information, ask follow-up questions and set confirmed to false.
 
   Task: {{{task}}}`,
 });
