@@ -25,7 +25,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy the standalone Next.js server output.
-COPY --from=builder /app/public ./public
+# COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
