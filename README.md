@@ -1,4 +1,3 @@
-ls
 # Auto Planner: Your AI-Powered To-Do List
 
 Auto Planner is a smart to-do list application that uses artificial intelligence to help you break down complex tasks into simple, manageable steps. Just describe what you need to do in plain English, and let the AI handle the planning for you.
