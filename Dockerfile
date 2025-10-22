@@ -24,12 +24,17 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy the standalone Next.js server output.
-# COPY --from=builder /app/public ./public
+# 1. Add the nextjs user and nodejs group (THIS IS THE MISSING STEP)
+# This uses a different base image (node:20-slim) which is Debian-based,
+# so we use addgroup and adduser.
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# 2. Copy the standalone Next.js server output.
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Set the user to a non-root user for security.
+# 3. Set the user to a non-root user for security.
 USER nextjs
 
 EXPOSE 3000
